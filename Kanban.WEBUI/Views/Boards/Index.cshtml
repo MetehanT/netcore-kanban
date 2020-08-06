@@ -1,0 +1,63 @@
+﻿@model BoardCreateAndListModel
+@{
+	ViewData["Title"] = "Boards";
+}
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<div class="container">
+	<h3>Boards</h3>
+	<div class="col-md-12">
+		<div class="row">
+			@foreach (var item in Model.userBoardsListModel.Boards)
+			{
+				<div class="col-md-3 pt-md-3">
+					<a href="/boards/detail/@item.Id">
+						<div class="card">
+							<h3 style="display:inline-block;">@item.Name</h3>
+						</div>
+					</a>
+				</div>
+			}
+
+			<div class="col-md-3 pt-md-3">
+				<div class="" id="add-board-change">
+					<a onclick="AddBoardButton()">
+						<div class="card-body">
+							<h6>Yeni Pano Ekleyin</h6>
+						</div>
+					</a>
+				</div>
+				<div class="add-board-deactive" id="add-board-form" tabindex="0">
+					<form method="post">
+						<div class="form-group">
+							<input id="add-board-input" placeholder="Pano Adı Girin" asp-for="boardCreateModel.Name" value="" class="form-control" onblur="AddBoardButton()">
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts{
+	<script>
+		function AddBoardButton() {
+			var button = document.getElementById("add-board-change");
+			var form = document.getElementById("add-board-form");
+			var input = document.getElementById("add-board-input");
+
+			if (form.className === "add-board-deactive") {
+				button.className = "add-board-deactive";
+				form.className = "";
+				input.focus();
+			} else {
+				button.className = "";
+				form.className = "add-board-deactive";
+			}
+		}
+
+	</script>
+}
+

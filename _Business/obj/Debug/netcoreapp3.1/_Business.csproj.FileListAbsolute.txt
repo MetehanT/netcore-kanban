@@ -1,0 +1,4 @@
+C:\Users\M\source\repos\Kanban\_Business\obj\Debug\netcoreapp3.1\_Business.csprojAssemblyReference.cache
+C:\Users\M\source\repos\Kanban\_Business\obj\Debug\netcoreapp3.1\_Business.AssemblyInfoInputs.cache
+C:\Users\M\source\repos\Kanban\_Business\obj\Debug\netcoreapp3.1\_Business.AssemblyInfo.cs
+C:\Users\M\source\repos\Kanban\_Business\obj\Debug\netcoreapp3.1\_Business.csproj.CoreCompileInputs.cache

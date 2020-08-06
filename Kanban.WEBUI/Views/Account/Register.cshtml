@@ -1,0 +1,35 @@
+﻿@model RegisterModel
+
+@{
+	ViewData["Title"] = "Register";
+}
+
+<div class="wrapper fadeInDown">
+	<div id="formContent">
+		<form asp-controller="Account" asp-action="Register" method="POST">
+			<input type="text" asp-for="UserName" placeholder="username">
+			<span asp-validation-for="UserName" class="text-danger"></span>
+
+
+			<input type="password" asp-for="Password" class="fadeIn third" placeholder="password">
+			<span asp-validation-for="Password" class="text-danger"></span>
+
+
+			<input type="password" asp-for="RePassword" class="fadeIn third" placeholder="password">
+			<span asp-validation-for="RePassword" class="text-danger"></span>
+
+
+			<input type="text" asp-for="Email" class="fadeIn second" placeholder="email">
+			<span asp-validation-for="Email" class="text-danger"></span>
+
+
+			<input type="submit" class="fadeIn fourth" value="Register">
+		</form>
+
+	</div>
+</div>
+
+@section Css{
+	<link rel="stylesheet" href="~/css/logreg.css" />
+}
+

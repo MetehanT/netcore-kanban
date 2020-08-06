@@ -1,0 +1,6 @@
+C:\Users\M\source\repos\Kanban\_DataAccess\bin\Debug\netcoreapp3.1\_DataAccess.deps.json
+C:\Users\M\source\repos\Kanban\_DataAccess\bin\Debug\netcoreapp3.1\_DataAccess.dll
+C:\Users\M\source\repos\Kanban\_DataAccess\obj\Debug\netcoreapp3.1\_DataAccess.csprojAssemblyReference.cache
+C:\Users\M\source\repos\Kanban\_DataAccess\obj\Debug\netcoreapp3.1\_DataAccess.AssemblyInfoInputs.cache
+C:\Users\M\source\repos\Kanban\_DataAccess\obj\Debug\netcoreapp3.1\_DataAccess.AssemblyInfo.cs
+C:\Users\M\source\repos\Kanban\_DataAccess\bin\Debug\netcoreapp3.1\_Entities.dll

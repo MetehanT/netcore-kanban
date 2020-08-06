@@ -1,0 +1,6 @@
+C:\Users\M\source\repos\Kanban\_Entities\obj\Debug\netcoreapp3.1\_Entities.AssemblyInfoInputs.cache
+C:\Users\M\source\repos\Kanban\_Entities\obj\Debug\netcoreapp3.1\_Entities.AssemblyInfo.cs
+C:\Users\M\source\repos\Kanban\_Entities\obj\Debug\netcoreapp3.1\_Entities.csproj.CoreCompileInputs.cache
+C:\Users\M\source\repos\Kanban\_Entities\bin\Debug\netcoreapp3.1\_Entities.deps.json
+C:\Users\M\source\repos\Kanban\_Entities\bin\Debug\netcoreapp3.1\_Entities.dll
+C:\Users\M\source\repos\Kanban\_Entities\obj\Debug\netcoreapp3.1\_Entities.csprojAssemblyReference.cache

@@ -1,0 +1,28 @@
+﻿@model LoginModel
+
+@{
+	ViewData["Title"] = "Login";
+}
+
+
+<div class="wrapper fadeInDown">
+	<div id="formContent">
+		<form asp-controller="Account" asp-action="Login" method="POST">
+			<input type="text" asp-for="Email" class="fadeIn second" placeholder="email">
+			<span asp-validation-for="Email" class="text-danger"></span>
+
+
+			<input type="password" asp-for="Password" class="fadeIn third" placeholder="password">
+			<span asp-validation-for="Password" class="text-danger"></span>
+
+
+			<input type="submit" class="fadeIn fourth" value="Log In">
+		</form>
+
+	</div>
+</div>
+
+@section Css{
+	<link rel="stylesheet" href="~/css/logreg.css" />
+}
+

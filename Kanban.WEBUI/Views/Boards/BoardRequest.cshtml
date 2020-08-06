@@ -1,0 +1,89 @@
+﻿
+@{
+	ViewData["Title"] = "BoardRequest";
+}
+
+<div class="container">
+
+	<h3>Kullanıcı Davet Cevaplama Sayfası</h3>
+
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th scope="col">#</th>
+				<th scope="col">Name</th>
+				<th scope="col">Accept</th>
+				<th scope="col">Cancel</th>
+			</tr>
+		</thead>
+		<tbody id="requestsBody">
+		</tbody>
+	</table>
+</div>
+
+
+@section Scripts{
+
+	<script type="text/javascript">
+
+		$(document).ready(function () {
+
+			ListRequest();
+		});
+
+
+		function ListRequest() {
+			$.ajax({
+				type: 'GET',
+				url: '../boards/boardrequestjson',
+				success: function (requests) {
+
+					$("#requestsBody").html("");
+
+					var result;
+
+					$.each(requests, function (index, value) {
+						result += '<tr><th scope = "row" >' + (index + 1) + '</th><td>' + value.board.name + '</td><td><button type="button" rId="' + value.id + '"class="btn btn-outline-success acceptBtn">Accept</button></td><td><button type ="button" rId="' + value.id + '" class="btn btn-outline-danger cancelBtn">Cancel</button ></td></tr>';
+					});
+
+					$("#requestsBody").append(result);
+				}
+
+			});
+		}
+
+		$(document).on("click", ".acceptBtn", function () {
+			$.ajax({
+				type: "POST",
+				url: "../boards/requestaccept/" + $(this).attr("rid"),
+				success: function () {
+					ListRequest();
+				},
+				error: function () {
+					ListRequest();
+				}
+
+			});
+
+		});
+
+
+		$(document).on("click", ".cancelBtn", function () {
+			$.ajax({
+				type: "POST",
+				url: "../boards/requestcancel/" + $(this).attr("rid"),
+				success: function () {
+					ListRequest();
+				},
+				error: function () {
+					ListRequest();
+				}
+
+			});
+
+		});
+
+	</script>
+
+}
+

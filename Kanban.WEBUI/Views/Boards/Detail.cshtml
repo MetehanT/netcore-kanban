@@ -1,0 +1,554 @@
+﻿@model BoardDetailViewModel
+@{
+	ViewData["Title"] = "Detail";
+}
+
+
+
+<div id="container" class="mx-3">
+	<div id="surface">
+		<main id="popover-boundary">
+			<div id="content">
+				<div class="board-wrapper">
+					<div class="board-main-content">
+						<div class="board-header .u-clearfix mx-2">
+							<span id="baslik" style="display:inline-block; font-size:20px; font-weight: 600; cursor: pointer"></span>
+
+							@if (ViewBag.userRoleId == 1)
+							{
+								<div class="form-inline ml-3" style="display: inline-block">
+									<input id="add-list-input" placeholder="Liste Adı Girin" value="" class="form-control form" onblur="">
+									<button class="btn btn-primary ml-2" type="button" onclick="CreateColumn()">Ekle</button>
+								</div>
+
+								<button data-toggle="modal" data-target="#humanDetail" class="btn btn-info ml-4 humanButton">Kişiler</button>
+
+								<button type="button" class="btn btn-danger" style="float:right" id="board-delete-btn">Delete Board</button>
+							}
+
+						</div>
+
+						<div class="board-canvas mt-2">
+							<div id="board" class="list-group-horizontal ui-sortable-handle">
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+	</div>
+</div>
+
+
+
+
+
+@section Scripts{
+	<script type="text/javascript">
+
+		$(document).ready(function () {
+			ListById();
+
+
+
+		});
+
+		function ListById() {
+			$.ajax({
+				type: 'GET',
+				url: '../boarddetail/@ViewBag.id',
+				success: function (board) {
+					$("#board").html("");
+
+					$.each(board.columns, function (index, value) {
+
+						var result = '<div class="list-wrapper" columnId="' + value.id + '"><div class="list"><div class="list-header"><h2 class="columnBaslik">' + value.name + '</h2>';
+
+						if (@ViewBag.userRoleId == 1) {
+							result += '<button type="button" class="columnDelete" aria-label="Close" columnId="' + value.id + '"><span aria-hidden="true" style="font-size: 18px;">&times;</span></button>';
+						}
+
+						result += '</div><div class="sortable list-cards connectedSortable fancy-scrollbar">';
+
+						$.each(board.cards, function (index, cardValue) {
+							if (cardValue.columnId == value.id)
+								result += '<a href="#cardDetail" class="cards" data-toggle="modal" cId="' + cardValue.id + '"  colId="' + value.id + '">' + cardValue.name + '</a>';
+						});
+
+						result += "</div>";
+
+						if(@ViewBag.userRoleId == 1)
+						{
+							result += '<div class="card-composer-container"><div class="input-group input-group-sm mb-3 mt-1 px-2"><input placeholder="Kart Adı Girin" value="" class="form-control mr-2 add-card-input' + value.id + '"><button class="btn btn-primary btn-sm" type="button" onclick="CreateCard(' + value.id + ')">Ekle</button></div></div>';
+						}
+
+						result += '</div></div>';
+
+						$("#board").append(result);
+					});
+
+					$("#baslik").html(board.boardName);
+
+
+					if (@ViewBag.userRoleId == 1) {
+						SortableSet();
+					}
+
+				}
+			});
+
+		}
+
+		function SortableSet() {
+			$("#board").sortable({
+				update: function (event, ui) {
+					UpdateColumns();
+				}
+			});
+
+			$("#board").disableSelection();
+
+			$(".sortable").sortable({
+				connectWith: ".connectedSortable",
+				stop: function () {
+					UpdateCards();
+				}
+			}).disableSelection();
+		}
+
+		$(document).on("click", ".cards", function () {
+			var cardId = $(this).attr("cId");
+			var cardName = $(this).html();
+			$("#cardDetail").attr("cardId", cardId);
+			$("#modalBaslik").html(cardName);
+
+			$.ajax({
+				type: "GET",
+				url: "../../cards/cardsdescription",
+				data: {
+					id: cardId
+				},
+				success: function (result) {
+					if (result == "")
+						$("#card-description-area").html("Açıklama alanı");
+					else {
+						$("#card-description-area").html(result);
+					}
+				},
+				error: function (result) {
+					$("#card-description-area").html("ERROR");
+				}
+			});
+		});
+
+	</script>
+
+	@if (ViewBag.userRoleId == 1)
+	{
+		<script type="text/javascript">
+
+			function UpdateColumns() {
+				var positions = [];
+				var ids = [];
+				$(".list-wrapper").each(function (index, element) {
+					//id si x olan ürünün indexi y <<<<<<<<<<<
+					ids.push(parseInt($(element).attr("columnid")));
+					positions.push(index + 1);
+				});
+
+				$.ajax({
+					type: "POST",
+					url: "../../columns/updatecolumn",
+					data: {
+						ids: ids,
+						positions: positions
+					},
+					success: function () {
+						ListById();
+					},
+					error: function () {
+						ListById();
+					}
+				});
+			}
+
+			function UpdateCards() {
+				var positions = [];
+				var columnsId = [];
+				var cardsId = [];
+
+				$(".cards").each(function (index, element) {
+					positions.push(index + 1);
+					$(element).attr("colId", parseInt($(element).parent().parent().parent().attr("columnid")));
+					columnsId.push(parseInt($(element).attr("colId")));
+					cardsId.push(parseInt($(element).attr("cId")));
+				});
+
+
+				$.ajax({
+					type: "POST",
+					url: "../../cards/updatecards",
+					data: {
+						cardsId: cardsId,
+						columnsId: columnsId,
+						positions: positions
+					},
+					success: function () {
+						ListById();
+					},
+					error: function () {
+						ListById();
+					}
+				});
+
+			}
+
+			function CreateColumn() {
+				var name = $("#add-list-input").val();
+				var columnCount = $(".list-wrapper").length;
+
+				if (columnCount != null)
+					parseInt(columnCount);
+				else {
+					columnCount = 0;
+					parseInt(columnCount);
+				}
+
+				if (name != "") {
+					$.ajax({
+						type: "POST",
+						url: "../../columns/create",
+						data: {
+							name: name,
+							columnCount: columnCount,
+							boardId: @ViewBag.id,
+						},
+						success: function () {
+							$("#add-list-input").val("");
+							ListById();
+						}
+					});
+				}
+			}
+
+			function CreateCard(id) {
+				var name = $(".add-card-input"+id).val();
+				var colId = parseInt(id);
+
+
+				if (name != "") {
+					$.ajax({
+						type: "POST",
+						url: "../../cards/create",
+						data: {
+							name: name,
+							colId: colId,
+						},
+						success: function () {
+							$("#add-card-input").val("");
+							ListById();
+						},
+						error: function() {
+							$("#add-card-input").val("");
+							ListById();
+						}
+					});
+				}
+			}
+
+
+			//Boarddaki kullanıcıları listeleme
+			$(document).on("click", ".humanButton", function () {
+				UserListele();
+			});
+
+			function UserListele() {
+				$.ajax({
+					type: "GET",
+					url: "../boarduserlist",
+					data: {
+						boardId: @ViewBag.id,
+					},
+					success: function (result) {
+						$("#personModalBody").html("");
+
+						var res;
+
+						$.each(result, function (index, value) {
+							res += '<tr><th scope = "row" >' + value.id + '</th><td>' + value.email + '</td><td><button type ="button" userId="' + value.id + '" class="btn btn-outline-danger user-delete-modal-button">Delete</button ></td></tr>';
+						});
+
+						$("#personModalBody").append(res);
+					},
+					error: function (result) {
+						console.log(result);
+					}
+				});
+	}
+
+			//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+			//Boarddan kullanıcı silme işlemi
+			$(document).on("click", ".user-delete-modal-button", function () {
+				var userId = $(this).attr("userId");
+				var boardId = @ViewBag.id;
+
+				$.ajax({
+					type: "POST",
+					url: "../deleteuserboard",
+					data: {
+						userId: userId,
+						boardId: boardId
+					},
+					success: function () {
+						UserListele();
+					},
+					error: function () {
+						UserListele();
+					}
+				});
+			});
+
+			//kişi davet etme eventi
+			$(document).on("click", ".kisiDavetBtn", function () {
+
+				//uid davet edilen kişinin id si
+				var uId = $("#kisiDavetInput").val();
+				var boardId = @ViewBag.boardId;
+
+
+				$.ajax({
+					type: "POST",
+					url: "../boardinvitation",
+					data: {
+						uId: uId,
+						boardId: boardId
+					},
+					success: function () {
+						$("#kisiDavetInput").val("");
+					},
+					error: function () {
+						$("#kisiDavetInput").val("");
+					}
+				});
+			});
+
+			//column silme eventi
+			$(document).on("click", ".columnDelete", function () {
+
+				var cId = $(this).attr("columnId");
+				var boardId = @ViewBag.boardId;
+
+
+				$.ajax({
+					type: "POST",
+					url: "../../columns/delete",
+					data: {
+						id: cId
+					},
+					success: function () {
+						ListById();
+					},
+					error: function () {
+						ListById();
+					}
+				});
+			});
+
+			//board ve card baslik değiştirme
+			$(function () {
+				$("#baslik").dblclick(function (e) {
+					e.stopPropagation();
+					var currentEle = $(this);
+					var value = $(this).html();
+					UpdateBoardName(currentEle, value);
+				});
+
+				$("#modalBaslik").dblclick(function (e) {
+					e.stopPropagation();
+					var currentEle = $(this);
+					var value = $(this).html();
+
+					UpdateCardName(currentEle, value);
+				});
+			});
+
+			//column baslik değiştirme
+			$(document).on("dblclick", ".columnBaslik", function () {
+				var currentEle = $(this);
+				var value = $(this).html();
+
+				UpdateColumnName(currentEle, value);
+			});
+
+			//baslik değiştirme fonksiyonları
+			function UpdateBoardName(currentEle, value) {
+				$(currentEle).html('<input class="thVal form-control" type="text" value="' + value + '" />');
+				$(".thVal").focus();
+				$(".thVal").keyup(function (event) {
+					if (event.keyCode == 13) {
+						$(currentEle).html($(".thVal").val().trim());
+						var name = $("#baslik").html();
+
+						$.ajax({
+							type: "POST",
+							url: "../boardnamechange",
+							data: {
+								name: name,
+								id: @ViewBag.id,
+							},
+							success: function () {
+								ListById();
+							},
+							error: function () {
+								ListById();
+							}
+						});
+					}
+				});
+			}
+
+			function UpdateCardName(currentEle, value) {
+				$(currentEle).html('<input class="thVal form-control" type="text" value="' + value + '" />');
+				$(".thVal").focus();
+				$(".thVal").keyup(function (event) {
+					if (event.keyCode == 13) {
+						$(currentEle).html($(".thVal").val().trim());
+						var name = $("#modalBaslik").html();
+						var id = $("#cardDetail").attr("cardId");
+
+						$.ajax({
+							type: "POST",
+							url: "../../cards/changename",
+							data: {
+								name: name,
+								id: id
+							},
+							success: function () {
+								ListById();
+							},
+							error: function () {
+								ListById();
+							}
+						});
+					}
+				});
+			}
+
+			function UpdateColumnName(currentEle, value) {
+				$(currentEle).html('<input class="thVal form-control" type="text" value="' + value + '" />');
+				$(".thVal").focus();
+				$(".thVal").keyup(function (event) {
+					if (event.keyCode == 13) {
+						$(currentEle).html($(".thVal").val().trim());
+						var name = $(currentEle).html();
+						var id = $(currentEle).closest(".list-wrapper").attr("columnId");
+
+
+						$.ajax({
+							type: "POST",
+							url: "../../columns/changename",
+							data: {
+								name: name,
+								id: id
+							},
+							success: function () {
+								ListById();
+							},
+							error: function () {
+								ListById();
+							}
+						});
+					}
+				});
+			}
+
+			//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+			//card silme işlemleri
+			$(document).on("click", "#card-delete", function () {
+				var cardId = $("#cardDetail").attr("cardId");
+
+				$.ajax({
+					type: "POST",
+					url: "../../cards/isdeletedcard",
+					data: {
+						cId: cardId
+					},
+					success: function () {
+						$("#cardDetail").modal("hide");
+						ListById();
+					},
+					error: function () {
+						ListById();
+					}
+				});
+			});
+
+			$(document).on("click", "#board-delete-btn", function () {
+
+				$("#board-delete-modal").modal("show");
+
+				$("#board-delete-modal-btn-no").on("click", function () {
+					$("#board-delete-modal").modal("hide");
+				});
+
+				$("#board-delete-modal-btn-yes").on("click", function () {
+					$("#board-delete-modal").modal("hide");
+
+					$.ajax({
+						type: "POST",
+						url: "../boardDelete",
+						data: {
+							id: @ViewBag.id,
+						},
+						success: function () {
+							window.location.href = "http://localhost:5000/boards";
+						}
+					});
+
+				});
+			});
+
+			//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+			//Card açıklama alanı düzenleme
+			$(document).on("dblclick", "#card-description-area", function () {
+
+				var cardId = $("#cardDetail").attr("cardId");
+
+				var current = $(this).text();
+				$("#card-description-area").html('<textarea class="form-control" id="card-description-edit" rows="5">' + current + '</textarea>');
+
+				$("#card-description-edit").focus(function () {
+
+				}).blur(function () {
+					var newcont = $("#card-description-edit").val();
+					$("#card-description-area").text(newcont.trim());
+
+					var des = $("#card-description-area").html();
+
+					$.ajax({
+						type: "POST",
+						url: "../../cards/updatedescription",
+						data: {
+							cardId: cardId,
+							description: des,
+						}
+					});
+				});
+
+				if (event.keyCode == 13) {
+
+				}
+
+			});
+
+			//Card silme butonu role 1 için etkin
+			$(document).ready(function () {
+				$("#card-modal-footer").append('<button class="btn btn-danger" style="float: left;" id="card-delete">Delete Card</button>');
+			});
+		</script>
+	}
+}
