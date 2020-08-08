@@ -12,14 +12,11 @@ namespace DataAccess.Concrete.EntityFramework
 
 		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
 		{
-			
 		}
 
 		public ApplicationDbContext()
 		{
 		}
-
-		
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{

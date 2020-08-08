@@ -49,9 +49,6 @@
 
 		$(document).ready(function () {
 			ListById();
-
-
-
 		});
 
 		function ListById() {
@@ -60,41 +57,28 @@
 				url: '../boarddetail/@ViewBag.id',
 				success: function (board) {
 					$("#board").html("");
-
 					$.each(board.columns, function (index, value) {
-
 						var result = '<div class="list-wrapper" columnId="' + value.id + '"><div class="list"><div class="list-header"><h2 class="columnBaslik">' + value.name + '</h2>';
-
 						if (@ViewBag.userRoleId == 1) {
 							result += '<button type="button" class="columnDelete" aria-label="Close" columnId="' + value.id + '"><span aria-hidden="true" style="font-size: 18px;">&times;</span></button>';
 						}
-
 						result += '</div><div class="sortable list-cards connectedSortable fancy-scrollbar">';
-
 						$.each(board.cards, function (index, cardValue) {
 							if (cardValue.columnId == value.id)
 								result += '<a href="#cardDetail" class="cards" data-toggle="modal" cId="' + cardValue.id + '"  colId="' + value.id + '">' + cardValue.name + '</a>';
 						});
-
 						result += "</div>";
-
 						if(@ViewBag.userRoleId == 1)
 						{
 							result += '<div class="card-composer-container"><div class="input-group input-group-sm mb-3 mt-1 px-2"><input placeholder="Kart Adı Girin" value="" class="form-control mr-2 add-card-input' + value.id + '"><button class="btn btn-primary btn-sm" type="button" onclick="CreateCard(' + value.id + ')">Ekle</button></div></div>';
 						}
-
 						result += '</div></div>';
-
 						$("#board").append(result);
 					});
-
 					$("#baslik").html(board.boardName);
-
-
 					if (@ViewBag.userRoleId == 1) {
 						SortableSet();
 					}
-
 				}
 			});
 

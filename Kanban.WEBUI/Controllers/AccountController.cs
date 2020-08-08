@@ -21,6 +21,7 @@ namespace Kanban.WEBUI.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
         }
+
         public IActionResult Login()
         {
             return View();
@@ -58,6 +59,7 @@ namespace Kanban.WEBUI.Controllers
         {
             return View();
         }
+
 
         [HttpPost]
         public async Task<IActionResult> Register(RegisterModel model)

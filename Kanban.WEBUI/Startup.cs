@@ -45,6 +45,8 @@ namespace Kanban.WEBUI
 			services.AddScoped<ICardService, CardManager>();
 			services.AddScoped<ICardDal, EfCardDal>();
 
+
+			
 			services.Configure<IdentityOptions>(options =>
 			{
 				//Password ayarlarý
